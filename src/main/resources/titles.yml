@@ -1,0 +1,15 @@
+moderator:
+  name: &bModerator
+  group: staff
+  rarity: 2
+  description: A moderator for the server!
+admin:
+  name: &cAdmin
+  group: staff
+  rarity: 4
+  description: An administrator for the server!
+slayer:
+  name: &cSlayer
+  group: tasks
+  rarity: 1
+  description: Kill 1000 mobs

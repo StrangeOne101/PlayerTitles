@@ -1,0 +1,12 @@
+# The different rarities of titles. The first is rarity 1, the
+# second rarity 2, etc
+rarities:
+  - &fCommon
+  - &9Rare
+  - &bVery Rare
+  - &6Super Rare
+  - &dUltra Rare
+
+# How long descriptions can be before being split into multiple
+# lines. Set this to -1 to disable
+description-max-width: 50

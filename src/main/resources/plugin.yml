@@ -1,0 +1,29 @@
+name: PlayerTitlesPlugin
+version: '${project.version}'
+main: com.strangeone101.playertitles.PlayerTitlesPlugin
+api-version: 1.16
+authors: [ StrangeOne101 ]
+description: Allows players to assign a title to the player
+depend:
+  - PlaceholderAPI
+  - LuckPerms
+commands:
+  playertitles:
+    aliases: [pt, titles]
+    permission: playertitles.command
+    description: Configure player titles
+permissions:
+  playertitles.command:
+    description: Allow usage of the playertitles command
+    default: true
+    children:
+      playertitles.command.menu:
+        default: true
+        description: Allows players to open the menu
+      playertitles.command.give:
+        default: op
+        description: Give titles to other players
+      playertitles.command.apply:
+        default: true
+        description: Apply a title you can use to yourself
+
