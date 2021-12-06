@@ -24,8 +24,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <source>14</source>
+                    <target>14</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -69,31 +69,37 @@
     </repositories>
 
     <dependencies>
-        <dependency>
+        <dependency> <!--- Spigot -->
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.16.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <dependency> <!-- Allows us to use the game profile classes -->
+            <groupId>com.mojang</groupId>
+            <artifactId>authlib</artifactId>
+            <version>1.5.25</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency> <!--- Lombok to make some things easier -->
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <dependency> <!--- PAPI, which is needed to store placeholders -->
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
             <version>2.10.0</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <dependency> <!--- LuckPerms, to store titles -->
             <groupId>net.luckperms</groupId>
             <artifactId>api</artifactId>
             <version>5.3</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <dependency> <!--- SmartInv API, allows us to make inventories while being lazy -->
             <groupId>fr.minuskube.inv</groupId>
             <artifactId>smart-invs</artifactId>
             <version>1.2.7</version>

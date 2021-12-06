@@ -1,0 +1,40 @@
+# Icons for the groups
+# Should be "groups.<group>"
+# Params:
+#  icon - Material[:CustomModelNumber:SKULL_TEXTURE]
+#  title - Displayname
+#  lore - The lore on the item
+#  hide-if-empty - Hides the icon if the player has no titles in this group
+#  position - The position on the page. x[,y,page]
+menu-config:
+  # Size of the internal X * Y
+  size: 3x7
+
+icons:
+  filter: HOPPER
+  page: ARROW
+  border: BLACK_STAINED_GLASS_PANE
+  back: SKELETON_HEAD
+
+group-icons:
+  staff:
+    icon: BARRIER
+    title: '&2Staff Titles'
+    lore:
+      - '&7All staff titles'
+    hide-if-empty: true
+    position: 1,1
+  tasks:
+    icon: ZOMBIE_HEAD
+    title: '&aTask Titles'
+    lore:
+      - '&7All titles gotten from killing mobs'
+    hide-if-empty: false
+    position: 2,1
+  all:
+    icon: GLASS
+    title: '&cAll Titles'
+    lore:
+      - '&7All titles from all categories'
+    hide-if-empty: false
+    position: 3,1

@@ -1,0 +1,26 @@
+
+
+menu:
+  title: 'Select a title'
+  title-group: 'Select a title (%group%)'
+  icons:
+    filter:
+      title: '&eFilter Titles'
+      selected-rarity: '&d\u27A4 %rarity%'
+      non-selected-rarity: '  %rarity%'
+      instructions: '&eLeft click to change the rarity\n&eRight click to cycle the opposite way'
+      all: 'ALL'
+    page-left:
+      title: '&ePrevious Page (&c%page%&e/&c%max%&e)'
+      instructions: '&7Click to go to the previous page'
+    page-right:
+      title: '&eNext Page (&c%page%&e/&c%max%&e)'
+      instructions: '&7Click to go to the next page'
+    back:
+      title: '&cGo back'
+      instructions: '&7Go back to the group selection'
+  player-title-lore:
+    - '&6Rarity: %rarity%'
+    - ''
+    - '&7%description%'
+  player-title-bound: '&e&lCURRENTLY BOUND'

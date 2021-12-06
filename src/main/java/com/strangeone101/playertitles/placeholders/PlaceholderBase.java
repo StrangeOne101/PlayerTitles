@@ -29,7 +29,7 @@ public abstract class PlaceholderBase extends PlaceholderExpansion {
         CompletableFuture<User> userFuture = userManager.loadUser(p.getUniqueId());
         User user = userFuture.join();
 
-        Title title = PlayerTitles.getTitle(getTitleFromUser(user));
+        Title title = PlayerTitles.getTitle(PlayerTitles.getTitleFromUser(user));
         if (title == null) return "";
 
         return get(title);
@@ -39,14 +39,10 @@ public abstract class PlaceholderBase extends PlaceholderExpansion {
     public String onPlaceholderRequest(Player p, String params) {
         User user = PlayerTitlesPlugin.getLuckPerms().getUserManager().getUser(p.getUniqueId());
 
-        Title title = PlayerTitles.getTitle(getTitleFromUser(user));
+        Title title = PlayerTitles.getTitle(PlayerTitles.getTitleFromUser(user));
         if (title == null) return "";
 
         return get(title);
-    }
-
-    static String getTitleFromUser(User user) {
-        return user.getCachedData().getMetaData().getMetaValue("title");
     }
 
     public abstract String get(Title title);

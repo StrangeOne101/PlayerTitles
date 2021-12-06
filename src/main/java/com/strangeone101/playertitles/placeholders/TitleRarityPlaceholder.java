@@ -3,6 +3,7 @@ package com.strangeone101.playertitles.placeholders;
 
 import com.strangeone101.playertitles.Config;
 import com.strangeone101.playertitles.Title;
+import org.bukkit.ChatColor;
 
 public class TitleRarityPlaceholder extends PlaceholderBase {
 
@@ -13,7 +14,11 @@ public class TitleRarityPlaceholder extends PlaceholderBase {
 
     @Override
     public String get(Title title) {
-        int rarity = Math.max(Math.min(title.getRarity(), Config.RARITIES.size()), 1);
-        return Config.RARITIES.get(rarity - 1);
+        return getRarity(title.getRarity());
+    }
+
+    public static String getRarity(int rarity) {
+        int intRarity = Math.max(Math.min(rarity, Config.RARITIES.size()), 1);
+        return ChatColor.translateAlternateColorCodes('&', Config.RARITIES.get(intRarity - 1));
     }
 }
