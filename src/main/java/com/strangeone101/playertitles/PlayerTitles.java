@@ -29,20 +29,23 @@ public class PlayerTitles {
     public static void registerTitle(Title title) {
         titles.put(title.getId(), title);
 
+        Permission perm = new Permission("playertitles.title." + title.getId());
+        Bukkit.getPluginManager().addPermission(perm);
+
         for (String group : title.getGroups()) {
             if (!groups.containsKey(group)) {
                 groups.put(group, new ArrayList<>());
 
-                Permission perm = new Permission("playertitles.group." + group);
-                Bukkit.getPluginManager().addPermission(perm);
-                addedPerms.add(perm);
+                Permission perm2 = new Permission("playertitles.group." + group);
+                Bukkit.getPluginManager().addPermission(perm2);
+                addedPerms.add(perm2);
+                perm.addParent(perm2, true);
             }
             groups.get(group).add(title);
-            
+
         }
 
-        Permission perm = new Permission("playertitles.title." + title.getId());
-        Bukkit.getPluginManager().addPermission(perm);
+
         addedPerms.add(perm);
     }
 
