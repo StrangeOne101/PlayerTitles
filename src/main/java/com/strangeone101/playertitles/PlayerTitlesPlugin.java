@@ -36,10 +36,9 @@ public final class PlayerTitlesPlugin extends JavaPlugin {
 
         loadConfig();
 
-        PlaceholderAPI.registerExpansion(new TitlePlaceholder());
-        PlaceholderAPI.registerExpansion(new TitleDescriptionPlaceholder());
-        PlaceholderAPI.registerExpansion(new TitleRarityPlaceholder());
-        PlaceholderAPI.registerExpansion(new TitleGroupPlaceholder());
+        InventoryManager.MANAGER.init(); //Sets up the inventory API
+
+        PlaceholderAPI.registerExpansion(new TitlePlaceholders());
 
         TitlesCommand command = new TitlesCommand();
         getCommand("playertitles").setExecutor(command);
@@ -50,6 +49,8 @@ public final class PlayerTitlesPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         PlayerTitles.removeAll(); //Remove perms and cached data
+
+        PlaceholderAPI.unregisterExpansion(TitlePlaceholders.TITLE_PLACEHOLDERS);
     }
 
     /**
