@@ -1,15 +1,15 @@
 moderator:
-  name: &bModerator
+  name: '&bModerator'
   group: staff
   rarity: 2
-  description: A moderator for the server!
+  description: 'A moderator for the server!'
 admin:
-  name: &cAdmin
+  name: '&cAdmin'
   groups: [staff, admin]
   rarity: 4
-  description: An administrator for the server!
+  description: 'An administrator for the server!'
 slayer:
-  name: &cSlayer
+  name: '&cSlayer'
   group: tasks
   rarity: 1
-  description: Kill 1000 mobs
+  description: 'Kill 1000 mobs'

@@ -13,7 +13,9 @@ public class TitleMenu implements InventoryProvider {
     public TitleMenu(Player player) {
         SmartInventory inv = SmartInventory.builder()
                 .title(InventoryConfig.getLanguageConfig().getString("menu.title"))
-                .size(InventoryConfig.getInventoryWidth(), InventoryConfig.getInventoryHeight())
+                .size(InventoryConfig.getInventoryWidth() + 2, InventoryConfig.getInventoryHeight() + 2)
+                .provider(this)
+                .manager(InventoryManager.MANAGER)
                 .closeable(true)
                 .id("playertitles").build();
         inv.open(player);
@@ -32,8 +34,8 @@ public class TitleMenu implements InventoryProvider {
                 if (PlayerTitles.getGroup(group).size() == 0) continue; //Don't place the item
             }
 
-            contents.set(x, y, ClickableItem.of(stack, e -> {
-                TitleGroupMenu newMenu = new TitleGroupMenu(group, contents.inventory());
+            contents.set(y, x, ClickableItem.of(stack, e -> {
+                TitleGroupMenu newMenu = new TitleGroupMenu(group, contents);
                 newMenu.getInventory().open(player);
             }));
         }

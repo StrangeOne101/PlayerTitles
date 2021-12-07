@@ -1,13 +1,13 @@
 package com.strangeone101.playertitles;
 
 import com.strangeone101.playertitles.inventory.InventoryConfig;
-import com.strangeone101.playertitles.placeholders.TitleDescriptionPlaceholder;
-import com.strangeone101.playertitles.placeholders.TitleGroupPlaceholder;
-import com.strangeone101.playertitles.placeholders.TitlePlaceholder;
-import com.strangeone101.playertitles.placeholders.TitleRarityPlaceholder;
+import com.strangeone101.playertitles.inventory.InventoryManager;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.luckperms.api.LuckPerms;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,6 +16,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -131,5 +133,12 @@ public final class PlayerTitlesPlugin extends JavaPlugin {
             newString = newString + "\n\u00A7" + lastColor + string;
         }
         return newString.substring(1);
+    }
+
+    public static String color(String s) {
+        return StringEscapeUtils.unescapeJava(
+                ChatColor.translateAlternateColorCodes('&',
+                        s.replaceAll("&#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])", "&x&$1&$2&$3&$4&$5&$6")
+                ));
     }
 }

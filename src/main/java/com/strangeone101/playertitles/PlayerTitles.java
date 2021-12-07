@@ -13,8 +13,10 @@ import org.bukkit.permissions.Permission;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class PlayerTitles {
@@ -36,17 +38,19 @@ public class PlayerTitles {
                 addedPerms.add(perm);
             }
             groups.get(group).add(title);
+            
         }
 
         Permission perm = new Permission("playertitles.title." + title.getId());
         Bukkit.getPluginManager().addPermission(perm);
+        addedPerms.add(perm);
     }
 
     public static List<Title> getGroup(String group) {
         if (group.equalsIgnoreCase("all")) { //If "all", we provide everything
-            List<Title> all = new ArrayList<>();
+            Set<Title> all = new HashSet<>();
             for (String g : groups.keySet()) all.addAll(groups.get(g));
-            return all;
+            return new ArrayList<>(all);
         }
         return groups.get(group.toLowerCase());
     }
@@ -116,6 +120,11 @@ public class PlayerTitles {
         });
 
         return completableFuture;
+    }
+
+    public static String getFancyRarity(int level) {
+        int intRarity = Math.max(Math.min(level, Config.RARITIES.size()), 1);
+        return PlayerTitlesPlugin.color(Config.RARITIES.get(intRarity - 1));
     }
 
     static void removeAll() {

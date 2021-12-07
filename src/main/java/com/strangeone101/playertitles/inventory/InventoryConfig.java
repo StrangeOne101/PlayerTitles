@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
-import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import static org.bukkit.DyeColor.*;
 
@@ -38,11 +38,13 @@ public class InventoryConfig {
     private static ItemStack arrow = new ItemStack(Material.ARROW);
     @Getter
     private static ItemStack back = new ItemStack(Material.BARRIER);
+    @Getter
+    private static ItemStack order = new ItemStack(Material.OAK_SIGN);
 
     @Getter
-    private static int inventoryHeight;
+    private static int inventoryHeight = 3;
     @Getter
-    private static int inventoryWidth;
+    private static int inventoryWidth = 7;
 
     @Getter
     private static YamlConfiguration languageConfig;
@@ -62,34 +64,53 @@ public class InventoryConfig {
         YamlConfiguration menuConfig = YamlConfiguration.loadConfiguration(file);
         String size = menuConfig.getString("menu-config.size", "3x7");
 
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("([0-9]) ?[\\*x] ?([0-9])");
-        Matcher matcher = pattern.matcher(size);
-        inventoryHeight = Integer.parseInt(matcher.group());
-        inventoryWidth = Integer.parseInt(matcher.group());
+        try {
+            inventoryWidth = Integer.parseInt(size.split("x")[0]);
+            inventoryHeight = Integer.parseInt(size.split("x")[1]);
+        } catch (Exception e) {
+            PlayerTitlesPlugin.getPlugin().getLogger().warning("Failed to parse size \"" + size + "\". Default size will be used");
+        }
 
 
         loadItem(menuConfig.getString("icons.filter"), filter);
         loadItem(menuConfig.getString("icons.border"), border);
-        loadItem(menuConfig.getString("icons.arrow"), arrow);
+        loadItem(menuConfig.getString("icons.page"), arrow);
         loadItem(menuConfig.getString("icons.back"), back);
+        loadItem(menuConfig.getString("icons.order"), order);
+
+        ItemMeta borderMeta = border.getItemMeta();
+        borderMeta.setDisplayName(ChatColor.RESET + "");
+        border.setItemMeta(borderMeta);
+
+        titleGroups.clear();
+        titleGroupPositions.clear();
+        titleGroupsHideIfEmpty.clear();
 
         for (String key : menuConfig.getConfigurationSection("group-icons").getKeys(false)) {
             String icon = menuConfig.getString("group-icons." + key + ".icon");
-            String title = ChatColor.translateAlternateColorCodes('&', menuConfig.getString("group-icons." + key + ".title"));
+            String title = PlayerTitlesPlugin.color(menuConfig.getString("group-icons." + key + ".title"));
             List<String> lore = menuConfig.getStringList("group-icons." + key + ".lore");
+            lore = lore.stream().map(s -> PlayerTitlesPlugin.color(s)).collect(Collectors.toList());
             boolean hideIfEmpty = menuConfig.getBoolean("group-icons." + key + ".hide-if-empty");
             String pos = menuConfig.getString("group-icons." + key + ".position");
-            byte x = Byte.parseByte(pos.split(",")[0]);
-            byte y = Byte.parseByte(pos.split(",")[1]);
+            byte x = 0, y = 0;
+            try {
+                x = Byte.parseByte(pos.split(",")[0]);
+                y = Byte.parseByte(pos.split(",")[1]);
+            } catch (Exception e) {
+                PlayerTitlesPlugin.getPlugin().getLogger().warning("Cannot parse position \"" + pos + "\" for group item \"" + key + "\"");
+            }
+
 
 
             ItemStack stack = fromString(icon);
-            if (stack != null) {
-                ItemMeta meta = stack.getItemMeta();
-                if (title != null && !title.equals("")) meta.setDisplayName(title);
-                if (lore != null && lore.size() > 0) meta.setLore(lore);
-                stack.setItemMeta(meta);
-            }
+            if (stack == null) stack = new ItemStack(Material.GLASS);
+
+            ItemMeta meta = stack.getItemMeta();
+            if (title != null && !title.equals("")) meta.setDisplayName(title);
+            if (lore != null && lore.size() > 0) meta.setLore(lore);
+            stack.setItemMeta(meta);
+
 
             titleGroups.put(key, stack);
             titleGroupsHideIfEmpty.put(key, hideIfEmpty);
@@ -118,6 +139,8 @@ public class InventoryConfig {
 
 
     public ItemStack fromString(String line) {
+        if (line == null) return null;
+
         String[] split = line.split(":");
         String material = split[0];
         int model = -1;

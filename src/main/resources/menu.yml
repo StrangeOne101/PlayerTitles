@@ -14,7 +14,8 @@ icons:
   filter: HOPPER
   page: ARROW
   border: BLACK_STAINED_GLASS_PANE
-  back: SKELETON_HEAD
+  back: BARRIER
+  order: OAK_SIGN
 
 group-icons:
   staff:

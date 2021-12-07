@@ -2,7 +2,6 @@ package com.strangeone101.playertitles;
 
 import com.strangeone101.playertitles.inventory.TitleGroupMenu;
 import com.strangeone101.playertitles.inventory.TitleMenu;
-import com.strangeone101.playertitles.placeholders.TitleRarityPlaceholder;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -15,7 +14,6 @@ import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
@@ -122,7 +120,7 @@ public class TitlesCommand implements CommandExecutor, TabExecutor {
                 sender.sendMessage(ChatColor.RED + "Title not found!");
                 return;
             }
-            String titleString = title.getName() + "\n" + TitleRarityPlaceholder.getRarity(title.getRarity())
+            String titleString = title.getName() + "\n" + PlayerTitles.getFancyRarity(title.getRarity())
                     + "\n\n" + PlayerTitlesPlugin.lengthSplit(title.getDescription(), Config.MAX_DESC_LENGTH);
             players.forEach(p -> {
                 PlayerTitles.giveTitle(p, title).thenAccept(bool -> {
