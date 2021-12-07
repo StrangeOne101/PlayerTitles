@@ -38,7 +38,7 @@ public class Config {
             } else {
                 List<String> groups = titleConfig.getStringList(titleId + ".groups");
                 String[] groupArray = {};
-                if (groups != null) groupArray = groups.toArray(new String[groups.size()])
+                if (groups != null) groupArray = groups.toArray(new String[groups.size()]);
                 title = new Title(titleId, name, desc, rarity, groupArray);
             }
 
