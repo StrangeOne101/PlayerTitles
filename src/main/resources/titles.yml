@@ -5,7 +5,7 @@ moderator:
   description: A moderator for the server!
 admin:
   name: &cAdmin
-  group: staff
+  groups: [staff, admin]
   rarity: 4
   description: An administrator for the server!
 slayer:

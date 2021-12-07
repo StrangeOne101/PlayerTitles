@@ -12,6 +12,6 @@ public class TitleGroupPlaceholder extends PlaceholderBase {
 
     @Override
     public String get(Title title) {
-        return title.getGroup() == null ? "" : title.getGroup();
+        return title.getGroups().length == 0 ? "" : title.getGroups()[0];
     }
 }

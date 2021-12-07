@@ -29,9 +29,18 @@ public class Config {
             String desc = titleConfig.getString(titleId + ".description", "");
             int rarity = titleConfig.getInt(titleId + ".rarity", 1);
             String group = titleConfig.getString(titleId + ".group");
-            if (group != null) group = group.toLowerCase();
 
-            Title title = new Title(titleId, name, desc, rarity, group);
+            Title title;
+
+            if (group != null) {
+                group = group.toLowerCase();
+                title = new Title(titleId, name, desc, rarity, group);
+            } else {
+                List<String> groups = titleConfig.getStringList(titleId + ".groups");
+                String[] groupArray = {};
+                if (groups != null) groupArray = groups.toArray(new String[groups.size()])
+                title = new Title(titleId, name, desc, rarity, groupArray);
+            }
 
             PlayerTitles.registerTitle(title);
         }

@@ -1,9 +1,13 @@
 package com.strangeone101.playertitles;
 
 import net.luckperms.api.model.user.User;
+import net.luckperms.api.model.user.UserManager;
+import net.luckperms.api.node.NodeEqualityPredicate;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.MetaNode;
+import net.luckperms.api.node.types.PermissionNode;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
@@ -11,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class PlayerTitles {
 
@@ -20,14 +25,14 @@ public class PlayerTitles {
     public static void registerTitle(Title title) {
         titles.put(title.getId(), title);
 
-        if (title.getGroup() != null) {
-            if (!groups.containsKey(title.getGroup())) {
-                groups.put(title.getGroup(), new ArrayList<>());
+        for (String group : title.getGroups()) {
+            if (!groups.containsKey(group)) {
+                groups.put(group, new ArrayList<>());
 
-                Permission perm = new Permission("playertitles.group." + title.getGroup());
+                Permission perm = new Permission("playertitles.group." + group);
                 Bukkit.getPluginManager().addPermission(perm);
             }
-            groups.get(title.getGroup()).add(title);
+            groups.get(group).add(title);
         }
 
         Permission perm = new Permission("playertitles.title." + title.getId());
@@ -35,7 +40,7 @@ public class PlayerTitles {
     }
 
     public static List<Title> getGroup(String group) {
-        if (group.equalsIgnoreCase("all")) {
+        if (group.equalsIgnoreCase("all")) { //If "all", we provide everything
             List<Title> all = new ArrayList<>();
             for (String g : groups.keySet()) all.addAll(groups.get(g));
             return all;
@@ -70,6 +75,44 @@ public class PlayerTitles {
 
     public static Title getTitle(String id) {
         return titles.get(id.toLowerCase());
+    }
+
+    public static CompletableFuture<Boolean> giveTitle(OfflinePlayer player, Title title) {
+        UserManager userManager = PlayerTitlesPlugin.getLuckPerms().getUserManager();
+        CompletableFuture<User> userFuture = userManager.loadUser(player.getUniqueId());
+        PermissionNode node = PermissionNode.builder().permission("playertitles.title." + title.getId()).value(true).build();
+
+        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
+
+        userFuture.thenAccept(user -> { //Once the user is loaded,
+            if (!user.data().contains(node, NodeEqualityPredicate.EXACT).asBoolean()) {
+                user.data().add(node); //Add the permission node to them
+                PlayerTitlesPlugin.getLuckPerms().getUserManager().saveUser(user); //Save the user
+                completableFuture.complete(true);
+            } else
+                completableFuture.complete(false);
+        });
+
+        return completableFuture;
+    }
+
+    public static CompletableFuture<Boolean> giveGroup(OfflinePlayer player, String group) {
+        UserManager userManager = PlayerTitlesPlugin.getLuckPerms().getUserManager();
+        CompletableFuture<User> userFuture = userManager.loadUser(player.getUniqueId());
+        PermissionNode node = PermissionNode.builder().permission("playertitles.group." + group).value(true).build();
+
+        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
+
+        userFuture.thenAccept(user -> { //Once the user is loaded,
+            if (!user.data().contains(node, NodeEqualityPredicate.EXACT).asBoolean()) {
+                user.data().add(node); //Add the permission node to them
+                PlayerTitlesPlugin.getLuckPerms().getUserManager().saveUser(user); //Save the user
+                completableFuture.complete(true);
+            } else
+                completableFuture.complete(false);
+        });
+
+        return completableFuture;
     }
 
     static void removeAll() {

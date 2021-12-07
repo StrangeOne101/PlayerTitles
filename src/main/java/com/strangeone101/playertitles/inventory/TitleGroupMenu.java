@@ -29,8 +29,12 @@ public class TitleGroupMenu implements InventoryProvider {
     @Getter
     private SmartInventory inventory;
 
-    public TitleGroupMenu(String group) {
+    @Getter
+    private SmartInventory parent;
+
+    public TitleGroupMenu(String group, SmartInventory parent) {
         this.group = group;
+        this.parent = parent;
 
         inventory = SmartInventory.builder()
                 .title(InventoryConfig.getLanguageConfig().getString("menu.title-group")
@@ -38,6 +42,7 @@ public class TitleGroupMenu implements InventoryProvider {
                 .closeable(true)
                 .id("titleGroupMenu_" + group)
                 .provider(this)
+                .parent(parent)
                 .size(6, 9)
                 .build();
     }
@@ -132,7 +137,7 @@ public class TitleGroupMenu implements InventoryProvider {
         List<ClickableItem> items = new ArrayList<>();
 
         for (Title title : titles) {
-            if (rarity == 0 || rarity == title.getRarity()) {
+            if (rarity == 0 || rarity == title.getRarity()) { //If the ALL rarity is selected or the rarities match
                 if (title.canUse(player)) {
                     ItemStack stack = new ItemStack(Material.NAME_TAG);
                     ItemMeta meta = stack.getItemMeta();

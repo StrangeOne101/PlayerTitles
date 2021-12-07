@@ -1,17 +1,16 @@
 package com.strangeone101.playertitles;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.permissions.Permissible;
 
 public class Title {
 
-    public Title(String id, String name, String description, int rarity, String group) {
+    public Title(String id, String name, String description, int rarity, String... groups) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.rarity = rarity;
-        this.group = group;
+        this.groups = groups;
         this.sortingName = name.toLowerCase().replaceAll("[&\u00A7][0-9a-fA-F]", "");
     }
 
@@ -28,13 +27,15 @@ public class Title {
     private int rarity;
 
     @Getter
-    private String group;
+    private String[] groups;
 
     @Getter
     private String sortingName;
 
     public boolean canUse(Permissible permissible) {
-        return permissible.hasPermission("playertitles.title." + id) ||
-                (group != null && permissible.hasPermission("playertitles.group." + group));
+        for (String group : groups) {
+            if (permissible.hasPermission("playertitles.group." + group)) return true;
+        }
+        return permissible.hasPermission("playertitles.title." + id);
     }
 }

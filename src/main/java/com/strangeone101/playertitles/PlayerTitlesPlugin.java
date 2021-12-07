@@ -1,5 +1,6 @@
 package com.strangeone101.playertitles;
 
+import com.strangeone101.playertitles.inventory.InventoryConfig;
 import com.strangeone101.playertitles.placeholders.TitleDescriptionPlaceholder;
 import com.strangeone101.playertitles.placeholders.TitleGroupPlaceholder;
 import com.strangeone101.playertitles.placeholders.TitlePlaceholder;
@@ -37,10 +38,18 @@ public final class PlayerTitlesPlugin extends JavaPlugin {
         config.readNormalConfig(new File(getDataFolder(), "config.yml"));
         config.readTitleConfig(new File(getDataFolder(), "titles.yml"));
 
+        InventoryConfig invconfig = new InventoryConfig();
+        invconfig.readMenuConfig(new File(getDataFolder(), "menu.yml"));
+        invconfig.readLanguageConfig(new File(getDataFolder(), "language.yml"));
+
         PlaceholderAPI.registerExpansion(new TitlePlaceholder());
         PlaceholderAPI.registerExpansion(new TitleDescriptionPlaceholder());
         PlaceholderAPI.registerExpansion(new TitleRarityPlaceholder());
         PlaceholderAPI.registerExpansion(new TitleGroupPlaceholder());
+
+        TitlesCommand command = new TitlesCommand();
+        getCommand("playertitles").setExecutor(command);
+        getCommand("playertitles").setTabCompleter(command);
 
     }
 
@@ -64,6 +73,7 @@ public final class PlayerTitlesPlugin extends JavaPlugin {
 
         try {
             InputStream in = plugin.getResource(resourceName);
+            if (!plugin.getDataFolder().exists()) plugin.getDataFolder().mkdirs();
 
             if (!output.exists()) {
                 output.createNewFile();
