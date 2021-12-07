@@ -22,6 +22,8 @@ public class PlayerTitles {
     private static Map<String, Title> titles = new HashMap<>();
     private static Map<String, List<Title>> groups = new HashMap<>();
 
+    private static List<Permission> addedPerms = new ArrayList<>();
+
     public static void registerTitle(Title title) {
         titles.put(title.getId(), title);
 
@@ -31,6 +33,7 @@ public class PlayerTitles {
 
                 Permission perm = new Permission("playertitles.group." + group);
                 Bukkit.getPluginManager().addPermission(perm);
+                addedPerms.add(perm);
             }
             groups.get(group).add(title);
         }
@@ -118,5 +121,9 @@ public class PlayerTitles {
     static void removeAll() {
         titles.clear();
         groups.clear();
+
+        for (Permission perm : addedPerms) {
+            Bukkit.getPluginManager().removePermission(perm);
+        }
     }
 }

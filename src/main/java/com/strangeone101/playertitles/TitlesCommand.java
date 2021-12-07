@@ -44,6 +44,11 @@ public class TitlesCommand implements CommandExecutor, TabExecutor {
             return true;
         }
 
+        if (args[0].equalsIgnoreCase("reload")) {
+            reload(sender);
+            return true;
+        }
+
         if (args[0].equalsIgnoreCase("give")) {
             giveTitle(sender, Arrays.copyOfRange(args, 1, args.length));
             return true;
@@ -56,12 +61,18 @@ public class TitlesCommand implements CommandExecutor, TabExecutor {
         return true;
     }
 
+    private void reload(CommandSender sender) {
+        PlayerTitlesPlugin.getPlugin().loadConfig();
+        sender.sendMessage(ChatColor.GREEN + "Config reloaded!");
+    }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         return null;
     }
 
     public void openMenu(CommandSender sender, String[] args) {
+        //TODO CHeck perms
         if (!(sender instanceof Player)) {
             if (args.length == 0) {
                 sendHelp(sender);
@@ -87,6 +98,7 @@ public class TitlesCommand implements CommandExecutor, TabExecutor {
     }
 
     public void giveTitle(CommandSender sender, String[] args) {
+        //TODO CHeck perms
         if (args.length < 3) {
             sender.sendMessage(ChatColor.RED + "Usage is /titles give <title/group> <player> [...]");
             return;

@@ -34,13 +34,7 @@ public final class PlayerTitlesPlugin extends JavaPlugin {
             luckPermsAPI = provider.getProvider();
         }
 
-        Config config = new Config();
-        config.readNormalConfig(new File(getDataFolder(), "config.yml"));
-        config.readTitleConfig(new File(getDataFolder(), "titles.yml"));
-
-        InventoryConfig invconfig = new InventoryConfig();
-        invconfig.readMenuConfig(new File(getDataFolder(), "menu.yml"));
-        invconfig.readLanguageConfig(new File(getDataFolder(), "language.yml"));
+        loadConfig();
 
         PlaceholderAPI.registerExpansion(new TitlePlaceholder());
         PlaceholderAPI.registerExpansion(new TitleDescriptionPlaceholder());
@@ -55,7 +49,7 @@ public final class PlayerTitlesPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        PlayerTitles.removeAll(); //Remove perms and cached data
     }
 
     /**
@@ -95,6 +89,16 @@ public final class PlayerTitlesPlugin extends JavaPlugin {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public void loadConfig() {
+        Config config = new Config();
+        config.readNormalConfig(new File(getDataFolder(), "config.yml"));
+        config.readTitleConfig(new File(getDataFolder(), "titles.yml"));
+
+        InventoryConfig invconfig = new InventoryConfig();
+        invconfig.readMenuConfig(new File(getDataFolder(), "menu.yml"));
+        invconfig.readLanguageConfig(new File(getDataFolder(), "language.yml"));
     }
 
     public static PlayerTitlesPlugin getPlugin() {

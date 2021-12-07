@@ -1,4 +1,4 @@
-name: PlayerTitlesPlugin
+name: PlayerTitles
 version: '${project.version}'
 main: com.strangeone101.playertitles.PlayerTitlesPlugin
 api-version: 1.16

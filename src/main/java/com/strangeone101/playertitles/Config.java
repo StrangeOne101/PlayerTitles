@@ -52,6 +52,7 @@ public class Config {
         }
 
         YamlConfiguration titleConfig = YamlConfiguration.loadConfiguration(file);
+
         RARITIES = titleConfig.getStringList("rarities");
 
         MAX_DESC_LENGTH = titleConfig.getInt("description-max-width", 50);
