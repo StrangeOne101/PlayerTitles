@@ -120,7 +120,7 @@ public class TitlesCommand implements CommandExecutor, TabExecutor {
                 sender.sendMessage(ChatColor.RED + "Title not found!");
                 return;
             }
-            String titleString = title.getName() + "\n" + PlayerTitles.getFancyRarity(title.getRarity())
+            String titleString = title.getName() + "\n" + PlayerTitles.getFancyRarity((int) title.getRarity())
                     + "\n\n" + PlayerTitlesPlugin.lengthSplit(title.getDescription(), Config.MAX_DESC_LENGTH);
             players.forEach(p -> {
                 PlayerTitles.giveTitle(p, title).thenAccept(bool -> {

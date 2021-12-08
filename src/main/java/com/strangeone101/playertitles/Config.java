@@ -27,7 +27,7 @@ public class Config {
         for (String titleId : titleConfig.getKeys(false)) {
             String name = PlayerTitlesPlugin.color(titleConfig.getString(titleId + ".name", "????"));
             String desc = PlayerTitlesPlugin.color(titleConfig.getString(titleId + ".description", ""));
-            int rarity = titleConfig.getInt(titleId + ".rarity", 1);
+            float rarity = (float) titleConfig.getDouble(titleId + ".rarity", 1);
             String group = titleConfig.getString(titleId + ".group");
 
             Title title;

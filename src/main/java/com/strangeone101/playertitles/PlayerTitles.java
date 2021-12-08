@@ -11,6 +11,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,6 +50,7 @@ public class PlayerTitles {
         addedPerms.add(perm);
     }
 
+    @Nullable
     public static List<Title> getGroup(String group) {
         if (group.equalsIgnoreCase("all")) { //If "all", we provide everything
             Set<Title> all = new HashSet<>();

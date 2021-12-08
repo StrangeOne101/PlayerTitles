@@ -21,9 +21,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class TitleGroupMenu implements InventoryProvider {
+
+    private static Map<UUID, Integer> CACHED_RARITIES = new HashMap<>();
+    private static HashSet<UUID> CACHED_REVERSE = new HashSet<>();
 
     @Getter
     private String group;
@@ -56,18 +63,33 @@ public class TitleGroupMenu implements InventoryProvider {
         Pagination pagination = contents.pagination();
         pagination.setItemsPerPage(4 * 7);
 
-        int rarity = contents.property("rarity", 0);
+        int rarity = contents.property("rarity", -1);
+        if (rarity == -1) { //No rarity is saved
+            if (CACHED_RARITIES.containsKey(player.getUniqueId())) { //Pull cached rarity
+                rarity = CACHED_RARITIES.get(player.getUniqueId());
+            } else rarity = 0;
+
+            contents.setProperty("rarity", rarity);
+        }
 
         setTitles(rarity, contents, player);
 
         addFilter(contents, player);
 
         contents.set(5, 3, ClickableItem.of(order(), e -> {
-            contents.setProperty("reverse", !contents.property("reverse", false));
+            //Toggle whether the list is reversed
+            if (CACHED_REVERSE.contains(player.getUniqueId())) {
+                CACHED_REVERSE.remove(player.getUniqueId());
+            } else CACHED_REVERSE.add(player.getUniqueId());
+
+            player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 2, 2);
             setTitles(contents.property("rarity", 0), contents, player); //Update the items
         }));
 
         contents.set(5, 4, ClickableItem.of(back(), e -> {
+            CACHED_RARITIES.remove(player.getUniqueId());
+            CACHED_REVERSE.remove(player.getUniqueId());
+
             if (parent != null) parent.inventory().open(player);
             else new TitleMenu(player);
         }));
@@ -78,24 +100,36 @@ public class TitleGroupMenu implements InventoryProvider {
         contents.set(5, 5, ClickableItem.of(filter(rarity), e -> {
             int rarity2 = contents.property("rarity", 0); //Read existing
             int temp = (rarity2 + (e.getClick().isRightClick() ? -1 : 1));
-            if (temp < 0) temp += Config.RARITIES.size();
+            if (temp < 0) temp += Config.RARITIES.size() + 1;
             temp = temp % (Config.RARITIES.size() + 1); //+1 so rarity 0 still works
 
+            player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 2, 2);
             contents.setProperty("rarity", temp);
-            setTitles(temp, contents, player); //Update the displayed titles
-            addFilter(contents, player);
+            CACHED_RARITIES.put(player.getUniqueId(), temp);
+
+            //These are commented out because changing the filter on the second (or more) page caused errors
+            //Instead, we are going to open page 0 again
+            inventory.open(player, 0);
+
+            //setTitles(temp, contents, player); //Update the displayed titles
+            //addFilter(contents, player);
         }));
     }
 
+
+
     public void addArrows(InventoryContents contents, Player player) {
         int page = contents.pagination().getPage();
-        int max = (contents.pagination().getPageItems().length / (4 * 7)) + 2;
+        //player.sendMessage("In pagination: " + contents.pagination().getPageItems().length);
+        int max = (contents.property("amount", 0) / (4 * 7));
+        //player.sendMessage("Calculated pages: " + max);
 
         ItemStack redEmpty = InventoryConfig.getBorder().clone();
         redEmpty.setType(Material.RED_STAINED_GLASS_PANE);
 
         if (page != 0) {
             contents.set(5, 1, ClickableItem.of(arrow(true, page, max), e -> {
+                player.playSound(player.getLocation(), Sound.BLOCK_WOODEN_BUTTON_CLICK_ON, 2, 2);
                 inventory.open(player, contents.pagination().getPage() - 1);
                 //addArrows(contents, player);
             }));
@@ -103,6 +137,7 @@ public class TitleGroupMenu implements InventoryProvider {
 
         if (page != max) {
             contents.set(5, 7, ClickableItem.of(arrow(false, page, max), e -> {
+                player.playSound(player.getLocation(), Sound.BLOCK_WOODEN_BUTTON_CLICK_ON, 2, 2);
                 inventory.open(player, contents.pagination().getPage() + 1);
                 //addArrows(contents, player);
             }));
@@ -188,9 +223,10 @@ public class TitleGroupMenu implements InventoryProvider {
 
     public void setTitles(int rarity, InventoryContents contents, Player player) {
         Pagination pagination = contents.pagination();
-        boolean reverse = contents.property("reverse", false);
+        boolean reverse = CACHED_REVERSE.contains(player.getUniqueId());
         List<Title> titles = PlayerTitles.getGroup(group);
-        Comparator<Title> comparator = Comparator.comparingInt(Title::getRarity).thenComparing(Title::getSortingName);
+        if (titles == null) return; //No titles found
+        Comparator<Title> comparator = Comparator.comparingDouble(Title::getRarity).thenComparing(Title::getSortingName);
         titles.sort(comparator);
 
         String currentTitle = PlayerTitles.getPlayerTitle(player);
@@ -198,7 +234,7 @@ public class TitleGroupMenu implements InventoryProvider {
         List<ClickableItem> items = new ArrayList<>();
 
         for (Title title : titles) {
-            if (rarity == 0 || rarity == title.getRarity()) { //If the ALL rarity is selected or the rarities match
+            if (rarity == 0 || rarity == (int)title.getRarity()) { //If the ALL rarity is selected or the rarities match
                 if (title.canUse(player)) {
                     ItemStack stack = new ItemStack(Material.NAME_TAG);
                     ItemMeta meta = stack.getItemMeta();
@@ -206,7 +242,7 @@ public class TitleGroupMenu implements InventoryProvider {
                     List<String> lore = new ArrayList<>();
 
                     for (String s : InventoryConfig.getLanguageConfig().getStringList("menu.player-title-lore")) {
-                        lore.add(PlayerTitlesPlugin.color(s.replace("%rarity%", PlayerTitles.getFancyRarity(title.getRarity()))
+                        lore.add(PlayerTitlesPlugin.color(s.replace("%rarity%", PlayerTitles.getFancyRarity((int) title.getRarity()))
                                 .replace("%description%", title.getDescription())));
                     }
                     if (currentTitle.equals(title.getId())) {
@@ -227,7 +263,10 @@ public class TitleGroupMenu implements InventoryProvider {
 
         if (reverse) Collections.reverse(items);
 
-        pagination.setItems(items.toArray(new ClickableItem[items.size()]));
+        //player.sendMessage("Debug: " + items.size() + " in list");
+        contents.setProperty("amount", items.size());
+
+        pagination.setItems(items.toArray(new ClickableItem[0]));
         SlotIterator slotIterator = contents.newIterator(SlotIterator.Type.HORIZONTAL, 1, 1);
         for (int i = 0; i < 8; i++) {
             slotIterator.blacklist(0, i);
@@ -242,7 +281,6 @@ public class TitleGroupMenu implements InventoryProvider {
 
         addArrows(contents, player); //Add arrows if we need them
     }
-
 
 
     @Override

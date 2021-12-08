@@ -62,7 +62,7 @@ public class TitlePlaceholders extends PlaceholderExpansion {
                 return Config.MAX_DESC_LENGTH < 1 ? title.getDescription() : //if its -1, dont split into multiple lines
                         PlayerTitlesPlugin.lengthSplit(title.getDescription(), Config.MAX_DESC_LENGTH);
             } else if (params.equalsIgnoreCase("rarity")) {
-                return PlayerTitles.getFancyRarity(title.getRarity());
+                return PlayerTitles.getFancyRarity((int) title.getRarity());
             }
         }
 
@@ -84,7 +84,7 @@ public class TitlePlaceholders extends PlaceholderExpansion {
                 return Config.MAX_DESC_LENGTH < 1 ? title.getDescription() : //if its -1, dont split into multiple lines
                         PlayerTitlesPlugin.lengthSplit(title.getDescription(), Config.MAX_DESC_LENGTH);
             } else if (params.equalsIgnoreCase("rarity")) {
-                int intRarity = Math.max(Math.min(title.getRarity(), Config.RARITIES.size()), 1);
+                int intRarity = Math.max(Math.min((int) title.getRarity(), Config.RARITIES.size()), 1);
                 return PlayerTitlesPlugin.color(Config.RARITIES.get(intRarity - 1));
             }
         }
