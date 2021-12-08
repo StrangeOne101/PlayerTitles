@@ -40,7 +40,7 @@ public final class PlayerTitlesPlugin extends JavaPlugin {
 
         InventoryManager.MANAGER.init(); //Sets up the inventory API
 
-        PlaceholderAPI.registerExpansion(new TitlePlaceholders());
+        new TitlePlaceholders().register();
 
         TitlesCommand command = new TitlesCommand();
         getCommand("playertitles").setExecutor(command);
