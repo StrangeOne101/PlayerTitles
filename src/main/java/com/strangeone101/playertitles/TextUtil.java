@@ -1,0 +1,130 @@
+package com.strangeone101.playertitles;
+
+import net.md_5.bungee.api.ChatColor;
+
+import lombok.experimental.UtilityClass;
+
+import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Thanks to Brikster for this Util class. Can be found at
+ * https://github.com/Brikster/Chatty/blob/master/api/src/main/java/ru/mrbrikster/chatty/util/TextUtil.java
+ */
+@UtilityClass
+public class TextUtil {
+
+    private final Pattern HEX_GRADIENT_PATTERN = Pattern.compile("\\{#([a-fA-F0-9]{6})(:#([a-fA-F0-9]{6}))+( )([^{}])*(})");
+    private final Pattern HEX_SPIGOT_PATTERN = Pattern.compile("§[xX](§[a-fA-F0-9]){6}");
+
+    private final List<ChatColor> FORMAT_COLORS = Arrays.asList(ChatColor.BOLD, ChatColor.ITALIC, ChatColor.UNDERLINE, ChatColor.MAGIC, ChatColor.STRIKETHROUGH, ChatColor.RESET);
+
+    public boolean isColor(ChatColor color) {
+        for (ChatColor formatColor : FORMAT_COLORS) {
+            if (formatColor == color) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean isFormat(ChatColor color) {
+        return !isColor(color);
+    }
+
+    /**
+     * Removes spigot hex-codes from string
+     *
+     * @param str string to strip hex
+     * @return stripped string
+     */
+    public String stripHex(String str) {
+        if (str == null) {
+            return null;
+        }
+
+        Matcher matcher = HEX_SPIGOT_PATTERN.matcher(str);
+        return matcher.replaceAll("");
+    }
+
+    /**
+     * Finds simple and gradient hex patterns in string and converts it to Spigot format
+     *
+     * @param text string to stylish
+     * @return stylished string
+     */
+    public String stylish(String text) {
+        if (text == null) {
+            return null;
+        }
+
+        Matcher matcher = HEX_GRADIENT_PATTERN.matcher(text);
+
+        StringBuffer stringBuffer = new StringBuffer();
+
+        while (matcher.find()) {
+            String gradient = matcher.group();
+
+            int groups = 0;
+            for (int i = 1; gradient.charAt(i) == '#'; i += 8) {
+                groups++;
+            }
+
+            Color[] colors = new Color[groups];
+            for (int i = 0; i < groups; i++) {
+                colors[i] = ChatColor.of(gradient.substring((8 * i) + 1, (8 * i) + 8)).getColor();
+            }
+
+            String substring = gradient.substring((groups - 1) * 8 + 9, gradient.length() - 1);
+
+            char[] chars = substring.toCharArray();
+
+            StringBuilder gradientBuilder = new StringBuilder();
+
+            int colorLength = chars.length / (colors.length - 1);
+            int lastColorLength;
+            if (colorLength == 0) {
+                colorLength = 1;
+                lastColorLength = 1;
+                colors = Arrays.copyOfRange(colors, 0, chars.length);
+            } else {
+                lastColorLength = chars.length % (colorLength * (colors.length - 1)) + colorLength;
+            }
+
+            for (int i = 0; i < (colors.length - 1); i++) {
+                int currentColorLength = ((i == colors.length - 2) ? lastColorLength : colorLength);
+                for (int j = 0; j < currentColorLength; j++) {
+                    Color color = calculateGradientColor(j + 1, currentColorLength, colors[i], colors[i + 1]);
+                    ChatColor chatColor = ChatColor.of(color);
+
+                    gradientBuilder.append(chatColor.toString()).append(chars[colorLength * i + j]);
+                }
+            }
+
+            matcher.appendReplacement(stringBuffer, gradientBuilder.toString());
+        }
+
+        matcher.appendTail(stringBuffer);
+
+        return ChatColor.translateAlternateColorCodes('&', stringBuffer.toString().replaceAll("&#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])", "&x&$1&$2&$3&$4&$5&$6"));
+    }
+
+    public String fixMultilineFormatting(String text) {
+        return text.replaceAll("\n$", "").replaceAll("\n", "\n&r");
+    }
+
+    private Color calculateGradientColor(int x, int parts, Color from, Color to) {
+        double p = (double) (parts - x + 1) / (double) parts;
+
+        return new Color(
+                (int) (from.getRed() * p + to.getRed() * (1 - p)),
+                (int) (from.getGreen() * p + to.getGreen() * (1 - p)),
+                (int) (from.getBlue() * p + to.getBlue() * (1 - p))
+        );
+    }
+
+}

@@ -136,9 +136,6 @@ public final class PlayerTitlesPlugin extends JavaPlugin {
     }
 
     public static String color(String s) {
-        return StringEscapeUtils.unescapeJava(
-                ChatColor.translateAlternateColorCodes('&',
-                        s.replaceAll("&#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])", "&x&$1&$2&$3&$4&$5&$6")
-                ));
+        return StringEscapeUtils.unescapeJava(TextUtil.stylish(s));
     }
 }
